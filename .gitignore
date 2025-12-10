@@ -1,0 +1,42 @@
+# global ignores (all locations)
+**/.env
+**/cred_notes.txt
+**/envExample.txt
+**/__pycache__
+**/venv
+**/venv/*
+**/claude.md
+envExample.txt
+
+#               common files and folders
+# Retain query folder and __init__ but remove all other content (like sql files)
+Common/Clients/Fishbowl/Queries/*
+!Common/Clients/Fishbowl/Queries/__init__.py
+
+# Remove Microsoft (graph) cred notes
+Common/Clients/Microsoft/cred_notes.txt
+
+# Remove Google's credentials.json
+Common/Clients/Google/credentials.json
+
+#               Retail Inventory Manager
+RetailInventoryManager/output/*
+RetailInventoryManager/queries/*
+RetailInventoryManager/ARCHITECTURE_SECURITY_OVERVIEW.txt
+RetailInventoryManager/bf-inventory-manager.txt
+RetailInventoryManager/error_log.json
+RetailInventoryManager/inventory.json
+requirements-old.txt
+
+#               In progress modules not ready for commit
+IntuiflowFishbowlAPI
+IntuiflowFishbowlAPI/*
+
+Other
+Other/*
+
+RetailInventoryManager
+RetailInventoryManager/*
+
+VariousInternalServices
+VariousInternalServices/*
