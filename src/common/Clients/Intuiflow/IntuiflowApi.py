@@ -196,7 +196,7 @@ def get_open_rope_items(is_test_environment:bool = False) -> object:
     """   """
     base_url = INTUIFLOW_TEST_ADDRESS if is_test_environment else INTUIFLOW_PROD_ADDRESS
     token = INTUIFLOW_TEST_TOKEN if is_test_environment else INTUIFLOW_PROD_TOKEN
-    url = f"{base_url}/api/v2/scheduling/orders/ropeitems?location=Radian%20Weapons&withRoot=false"
+    url = f"{base_url}/api/v2/scheduling/orders/ropeitems?withRoot=false"
 
     headers = {
         "api_key": token
@@ -241,7 +241,7 @@ def get_closed_rope_items(closed_after:str, is_test_environment:bool = False) ->
     """   """
     base_url = INTUIFLOW_TEST_ADDRESS if is_test_environment else INTUIFLOW_PROD_ADDRESS
     token = INTUIFLOW_TEST_TOKEN if is_test_environment else INTUIFLOW_PROD_TOKEN
-    url = f"{base_url}/api/v2/scheduling/orders/ropeitems?location=Radian%20Weapons&includeClosed=true&closedAfter={closed_after}&withRoot=false"
+    url = f"{base_url}/api/v2/scheduling/orders/ropeitems?includeClosed=true&closedAfter={closed_after}&withRoot=false"
 
     headers = {
         "api_key": token

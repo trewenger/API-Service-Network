@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: common
+Version: 0.1.0
+Summary: Internal shared code for all services
+Author: Tre Wenger
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
