@@ -7,26 +7,31 @@
 **/venv/*
 **/claude.md
 envExample.txt
+.vscode
+.vscode/
 
 #               common files and folders
 # Retain query folder and __init__ but remove all other content (like sql files)
-Common/Clients/Fishbowl/Queries/*
-!Common/Clients/Fishbowl/Queries/__init__.py
+src/common/Clients/Fishbowl/Queries/*
+!common/Clients/Fishbowl/Queries/__init__.py
 
 # Remove Microsoft (graph) cred notes
-Common/Clients/Microsoft/cred_notes.txt
+src/common/Clients/Microsoft/cred_notes.txt
 
 # Remove Google's credentials.json
-Common/Clients/Google/credentials.json
+src/common/Clients/Google/credentials.json
+src\common\Clients\Google\credentials.json
 
 #               Retail Inventory Manager
 RetailInventoryManager/output/*
-RetailInventoryManager/queries/*
 RetailInventoryManager/ARCHITECTURE_SECURITY_OVERVIEW.txt
 RetailInventoryManager/bf-inventory-manager.txt
 RetailInventoryManager/error_log.json
 RetailInventoryManager/inventory.json
 requirements-old.txt
+RetailInventoryManager/requirements.txt
+RetailInventoryManager/system_logging.py
+RetailInventoryManager/queries/*
 
 #               In progress modules not ready for commit
 IntuiflowFishbowlAPI
@@ -35,8 +40,7 @@ IntuiflowFishbowlAPI/*
 Other
 Other/*
 
-RetailInventoryManager
-RetailInventoryManager/*
-
 VariousInternalServices
 VariousInternalServices/*
+
+src/common/Utils/Modules/EmailReport.py

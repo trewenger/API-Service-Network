@@ -6,7 +6,7 @@ Purpose:
 -   .env must be loaded in the script importing this client BEFORE importing this client.
 """
 
-from FishbowlCalls import *
+from common.Clients.Fishbowl.FishbowlCalls import *
 import time
 
 class CallFailure(Exception):

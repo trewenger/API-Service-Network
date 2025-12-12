@@ -8,7 +8,7 @@ Purpose:
 
 import requests, json, base64, os
 
-def send_email(subject: str, html_body: str, recipients: list, attachments=[], sender="SystemNotifications@radianweapons.com") -> None:
+def send_email(subject: str, html_body: str, recipients: list, attachments=[], sender="") -> None:
     """ 
     -   The sent emails require a subject, html body, and a list of recipients. 
     -   Attachments are optional and represent a list of file paths. They are automatically converted to base64
@@ -16,6 +16,7 @@ def send_email(subject: str, html_body: str, recipients: list, attachments=[], s
     -   sender is also an optional field, but allows you to configure the sent from address. 
     -   The body can consist of any valid HTML, allowing for deeper customization of the email content and style. 
     """
+    sender = os.getenv('SENDER_EMAIL') if not sender else sender
 
     # .env configs
     SMTP2GO_API_KEY = os.getenv("SMTP2GO_API_KEY")
