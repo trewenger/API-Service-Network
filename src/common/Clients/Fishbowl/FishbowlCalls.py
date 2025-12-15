@@ -50,8 +50,15 @@ def fb_login(is_test_db) -> object:
     try:
         response = requests.request("POST", url, headers=headers, data=payload)
         response_json = response.json()
-        token = response_json["token"]
-        print("Session Created: ", response.status_code, response.reason)
+        token = response_json.get("token")
+        if token:
+            try:
+                print("Session Created: ", response.status_code, response.reason, response.json().get('message'))
+            except:
+                print("Session Created: ", response.status_code, response.reason)
+        else:
+            print(f"No token in the response: {response.status_code, response.reason, response.json().get("message")}")
+
         return {"token":token, "status":response.status_code, "reason":response.reason}
     except Exception as e:
         print(f"Login error: {e}")

@@ -18,6 +18,7 @@ CSV_FOLDER = REPO_ROOT / "CSV"
 def load_query(filename: str) -> str:
     """
     Searches the entire project directory for an SQL file and returns its contents.
+    Query file names must be unique or this could return an unexpected query.
     
     :param filename: The name of the SQL file (with or without .sql extension)
     :return: The SQL query string
