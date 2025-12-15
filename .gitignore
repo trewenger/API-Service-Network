@@ -33,14 +33,19 @@ RetailInventoryManager/requirements.txt
 RetailInventoryManager/system_logging.py
 RetailInventoryManager/queries/*
 
+
+#            Various Automations and Internal Services
+VariousInternalServices/Outputs/*
+VariousInternalServices/Queries/*
+VariousInternalServices/DonaldsRevenueReport.py
+VariousInternalServices/OnTimePerformance copy.py
+VariousInternalServices/TaxCollectionCheck.py
+
 #               In progress modules not ready for commit
 IntuiflowFishbowlAPI
 IntuiflowFishbowlAPI/*
 
 Other
 Other/*
-
-VariousInternalServices
-VariousInternalServices/*
 
 src/common/Utils/Modules/EmailReport.py
