@@ -23,7 +23,7 @@ API Service Network is a monorepo containing:
 
 2. **Applications** - Production services utilizing the common library:
    - **RetailInventoryManager** - Web-based inventory synchronization system (Flask + APScheduler)
-   - More applications coming soon
+   - **VariousInternalServices** - Collection of scheduled automation services for operations and reporting
 
 This architecture promotes code reuse, consistent patterns, and separation of concerns across internal automation projects.
 
@@ -52,6 +52,14 @@ API-Service-Network/
 │   ├── templates/                # HTML templates
 │   ├── static/                   # CSS/JS assets
 │   └── queries/                  # SQL query files
+│
+├── VariousInternalServices/       # Scheduled automation services
+│   ├── OnTimePerformance.py      # Order fulfillment tracking
+│   ├── TaxSystemHealth.py        # Tax compliance validation
+│   ├── VendorTracker.py          # Parts at vendor monitoring
+│   ├── WipUpdate.py              # WIP tracker updates
+│   ├── Queries/                  # SQL query files (.gitignored)
+│   └── Outputs/                  # CSV exports (.gitignored)
 │
 ├── pyproject.toml                 # Common library package config
 ├── README.md                      # This file
@@ -288,6 +296,137 @@ For detailed documentation, see [`RetailInventoryManager/claude.md`](./RetailInv
 
 ---
 
+### VariousInternalServices
+
+A collection of automated internal services for business operations and reporting. Each service is designed to run on a schedule (via cron, Task Scheduler, etc.) and utilizes the common library for Fishbowl, Google Sheets, and email integration.
+
+**Services:**
+
+#### OnTimePerformance
+Tracks order fulfillment performance by syncing Fishbowl order data to Google Sheets for analysis.
+
+- Queries Fishbowl for completed orders from the previous day
+- Automatically pastes results to Google Sheet database
+- Sends email summary reports after each run
+- Updates "date last updated" fields across multiple report sheets
+
+```python
+from VariousInternalServices.OnTimePerformance import on_time_performance
+
+on_time_performance(
+    result_recipients=["admin@example.com"],
+    custom_headers=["OrderType", "SO", "DateFulfilled", "LeadTime"],
+    query_name="OnTimePerformance.sql",
+    last_row=200000
+)
+```
+
+#### TaxSystemHealth
+Validates tax compliance configuration in Fishbowl by checking product tax codes and customer exemption statuses.
+
+- Queries Fishbowl for products missing tax codes
+- Identifies customer accounts with incorrect exemption settings
+- Sends detailed error reports when configuration issues are found
+- Helps maintain sales tax compliance
+
+```python
+from VariousInternalServices.TaxSystemHealth import tax_system_health
+
+tax_system_health(
+    result_recipients=["accounting@example.com"],
+    product_query_name="TaxHealthProductCheck",
+    customer_query_name="TaxHealthCustomerCheck"
+)
+```
+
+#### VendorTracker
+Monitors parts currently at external vendors (outsourced manufacturing) and updates a Google Sheet tracker.
+
+- Discovers quantity of parts shipped to vendors but not yet received
+- Validates WIP (Work In Progress) name custom fields in Fishbowl
+- Cross-references part names with existing WIP tracker entries
+- Alerts on missing or unmatched WIP names
+
+```python
+from VariousInternalServices.VendorTracker import vendor_tracker
+
+vendor_tracker(
+    email_rec=["operations@example.com"],
+    column_order=["PartNumber", "Description", "Qty", "WipName"],
+    sheet_name="import",
+    query_name="VendorTracker"
+)
+```
+
+#### WipUpdate
+Comprehensive Work In Progress (WIP) tracker update that archives historical data and imports current Fishbowl inventory status.
+
+- Archives previous week's backorder and shipment data
+- Queries Fishbowl for:
+  - Last week shipped quantities
+  - Six month shipped quantities
+  - Current backorder (on-order) quantities
+- Exports data to CSV files for historical records
+- Updates multiple Google Sheet tabs with current data
+- Validates column positions to prevent data corruption
+
+```python
+from VariousInternalServices.WipUpdate import wip_update
+
+wip_update(
+    email_recipients=["inventory@example.com"],
+    last_week_ship_query_name="WipLastWeekShip",
+    six_month_ship_query_name="WipSixMonthShip",
+    bo_query_name="WipBO"
+)
+```
+
+**Common Features Across All Services:**
+- Automated email notifications with run summaries
+- Session logging with error tracking
+- Environment variable configuration (no hardcoded credentials)
+- Graceful error handling with detailed logging
+- SQL queries stored in separate `.sql` files for maintainability
+
+**Setup:**
+
+```bash
+cd VariousInternalServices
+
+# Configure .env file with required credentials
+# (See individual service docstrings for specific variables)
+
+# Create SQL query files in Queries/ folder
+# Example: Queries/OnTimePerformance.sql
+
+# Run individual services
+python -c "from OnTimePerformance import on_time_performance; on_time_performance(['admin@example.com'], [], 'OnTimePerformance.sql')"
+
+# Or schedule with cron (Linux/Mac)
+# 0 9 * * * cd /path/to/VariousInternalServices && python -c "from OnTimePerformance import on_time_performance; on_time_performance(['admin@example.com'], [], 'OnTimePerformance.sql')"
+
+# Or schedule with Task Scheduler (Windows)
+```
+
+**Environment Variables Required:**
+
+All services require the standard Fishbowl, Google Sheets, and SMTP2GO credentials (see Common Library section). Additional service-specific variables:
+
+```env
+# OnTimePerformance
+ON_TIME_PERFORMANCE_SHEET_ID=your_sheet_id
+ON_TIME_PERFORMANCE_SHEET_URL=your_sheet_url
+
+# VendorTracker
+VENDOR_TRACKER_SHEET_ID=your_sheet_id
+VENDOR_TRACKER_SHEET_URL=your_sheet_url
+
+# WipUpdate
+WIP_TRACKER_ID=your_sheet_id
+```
+
+---
+
 ## Development
 
 ### Requirements
@@ -343,9 +482,12 @@ To add a new API client to the common library:
 This library was built for production use and currently powers:
 
 - Automated inventory synchronization between ERP and e-commerce systems
+- Order fulfillment performance tracking and reporting
+- Tax compliance validation and monitoring
+- Vendor parts tracking and WIP management
 - Scheduled report generation and distribution via email
 - Data pipeline orchestration between business systems
-- Manufacturing planning
+- Manufacturing planning and scheduling
 
 Potential use cases for others:
 - Multi-system integration projects
