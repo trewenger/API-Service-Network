@@ -40,6 +40,8 @@ VariousInternalServices/Queries/*
 VariousInternalServices/DonaldsRevenueReport.py
 VariousInternalServices/OnTimePerformance copy.py
 VariousInternalServices/TaxCollectionCheck.py
+# web interface
+VariousInternalServices/WebInterface/data/*
 
 #               In progress modules not ready for commit
 IntuiflowFishbowlAPI
@@ -49,3 +51,4 @@ Other
 Other/*
 
 src/common/Utils/Modules/EmailReport.py
+
