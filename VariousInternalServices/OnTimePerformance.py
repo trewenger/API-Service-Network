@@ -19,10 +19,11 @@ from datetime import datetime
 
 # ----------------------------- Globals ------------------------------- #
 __all__ = ["on_time_performance"]
-TODAY = (datetime.now()).strftime("%m/%d/%Y")
-SHEET_ID = os.getenv('ON_TIME_PERFORMANCE_SHEET_ID')
-SHEET_URL = os.getenv('ON_TIME_PERFORMANCE_SHEET_URL')
-LOG = SessionLog()
+TODAY = None
+SHEET_ID = None
+SHEET_URL = None
+LOG = None
+SS = None
 #---------------------------- Functions ------------------------------#
 
 def _get_fb_data(query) -> dict:
@@ -50,13 +51,12 @@ def _find_paste_area(data_length: int, last_row:int) -> int:
     start row number. """
     try:
         LOG.log("find_paste_area", "Looking for start row... ")
-        ss = GoogleSession(SHEET_ID)
-        db_col = ss.read_range("Database", "A:A")
+        db_col = SS.read_range("Database", "A:A")
         row_offset = 0
         is_valid = False
         while not is_valid:
             row_offset += 1
-            start_row = ss.read_range("Database", f"A{len(db_col)+row_offset}:R{len(db_col)+row_offset}")
+            start_row = SS.read_range("Database", f"A{len(db_col)+row_offset}:R{len(db_col)+row_offset}")
             is_valid = all(cell == [] or cell is None for cell in start_row)
             if row_offset > 5:
                 raise Exception("Unable to find the start row. Preventing infinite loop. ")
@@ -77,9 +77,8 @@ def _paste_data(data:list, start_row:int, headers:list) -> None:
     """ Internal function: 
     Pastes the passed data into the google sheet. Returns None.
     """
-    ss = GoogleSession(SHEET_ID)
-    num_entries = len(data)
     try:
+        num_entries = len(data)
         LOG.log("paste_data", "Started reformating JSON to 2D array. ")
         column_order = headers
         """
@@ -88,7 +87,7 @@ def _paste_data(data:list, start_row:int, headers:list) -> None:
         """
         rows = [[row.get(k, "") for k in column_order] for row in data]
         LOG.log("paste_data", "Successfully reformated JSON to a 2D array. ")
-        ss.update_range("Database", f"A{start_row}", rows)
+        SS.update_range("Database", f"A{start_row}", rows)
         LOG.log("paste_data", f"Successfully pasted {num_entries} entries to the Database sheet. ")
 
     except Exception as e:
@@ -99,11 +98,10 @@ def _paste_data(data:list, start_row:int, headers:list) -> None:
 
     try:
         # Update the date last updated fields. 
-        ss = GoogleSession(SHEET_ID)
         # (sheet name, range, values)
-        ss.update_range("Retail", "B18", [[TODAY]])
-        ss.update_range("OEM", "B18", [[TODAY]])
-        ss.update_range("TIER", "B18", [[TODAY]])
+        SS.update_range("Retail", "B18", [[TODAY]])
+        SS.update_range("OEM", "B18", [[TODAY]])
+        SS.update_range("TIER", "B18", [[TODAY]])
         return
     except Exception as e:
         LOG.log("paste_data", e, True)
@@ -148,6 +146,13 @@ def on_time_performance(result_recipients:list, custom_headers:list, query_name:
     :return: The session logging output object.
     """
 
+    global TODAY, SHEET_ID, SHEET_URL, LOG, SS
+    TODAY = (datetime.now()).strftime("%m/%d/%Y")
+    SHEET_ID = os.getenv('ON_TIME_PERFORMANCE_SHEET_ID')
+    SHEET_URL = os.getenv('ON_TIME_PERFORMANCE_SHEET_URL')
+    LOG = SessionLog()
+    SS = GoogleSession(SHEET_ID)
+
     # Find the .sql SELECT query and load it as a string
     query = load_query(query_name)
     if not query:
@@ -164,8 +169,11 @@ def on_time_performance(result_recipients:list, custom_headers:list, query_name:
     # Paste the query response values into the indentified cell range
     if LOG.error_flag() == 0:
         # Use customer headers if passed
-        headers = query_resp.keys() if not custom_headers else custom_headers
-        _paste_data(query_resp, start_row, headers)
+        headers = custom_headers
+        if not headers:
+            headers = list(query_resp.get('data')[0].keys())
+
+        _paste_data(query_resp.get('data'), start_row, headers)
     
     # Send summary email: success or failure
     if result_recipients:

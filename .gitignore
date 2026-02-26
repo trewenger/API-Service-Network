@@ -9,6 +9,13 @@
 envExample.txt
 .vscode
 .vscode/
+.claude
+.claude/
+
+# Package build artifacts
+*.egg-info/
+src/common.egg-info
+src/common.egg-info/
 
 #               common files and folders
 # Retain query folder and __init__ but remove all other content (like sql files)
@@ -40,6 +47,9 @@ VariousInternalServices/Queries/*
 VariousInternalServices/DonaldsRevenueReport.py
 VariousInternalServices/OnTimePerformance copy.py
 VariousInternalServices/TaxCollectionCheck.py
+VariousInternalServices/EmailCompromise.py
+# web interface
+VariousInternalServices/WebInterface/data/*
 
 #               In progress modules not ready for commit
 IntuiflowFishbowlAPI
@@ -49,3 +59,4 @@ Other
 Other/*
 
 src/common/Utils/Modules/EmailReport.py
+
