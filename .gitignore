@@ -9,6 +9,13 @@
 envExample.txt
 .vscode
 .vscode/
+.claude
+.claude/
+
+# Package build artifacts
+*.egg-info/
+src/common.egg-info
+src/common.egg-info/
 
 #               common files and folders
 # Retain query folder and __init__ but remove all other content (like sql files)
